@@ -5,93 +5,151 @@
   <title>ImageBlob.md</title>
 </head>
 <body>
-  <p><a name="entrypoints" id="entrypoints"></a></p>
-<h1>require('uxp').entrypoints</h1>
-<p>To get an instance: <code>require("uxp").entrypoints</code></p>
-<p><a name="entrypoints-setup" id="entrypoints-setup"></a></p>
-<h2>setup(entrypoints)</h2>
-<p>API for plugin to add handlers and menu items for entrypoints defined in manifest.
-This API can only be called once and there after other apis can be used to modify menu items.
-The function throws in case of any error in entrypoints data or if its called more than once.</p>
+  <p><a name="imageblob" id="imageblob"></a></p>
+<h1>window.ImageBlob</h1>
+<p><strong>Since</strong>: UXP v7.0.0  </p>
+<p><a name="new-imageblob-new" id="new-imageblob-new"></a></p>
+<h2>ImageBlob(arrayBuffer, options)</h2>
+<p>Blobs are used to create URLs, which can be used as <code>src</code> in <code>HTMLImageElement</code>. It can be created using image data in the standard compression formats such as PNG, JPG, JPEG ,etc.
+ImageBlob is a custom type that extends the support to use uncompressed image data. <br></br>
+e.g. ImageBlob can be created by passing arrayBuffer containing the RGB values for each pixel and options containing metadata to interpret the data in arraybuffer.</p>
+<p>ImageBlob can be created in the following ways
+- standard image compression formats: pass ArrayBuffer of the <code>standard compression formats</code> and mimeType of the compression in the options.type.
+- uncompressed image: pass ArrayBuffer of the uncompressed image data i.e. raw data of each pixel and options to interpret the data, option.type should be passed as "image/uncompressed".<br></br></p>
+<p><a href="/ps_reference/media/imaging/#photoshopimagedata-1">PhotoshopImageData</a> is compatible with ImageBlob,
+<code>PhotoshopImageData</code> object can be directly passed in for options.</p>
+<p><b>Note: <code>ImageBlob support is subject to enablement by HostApp. Currently supported by Photoshop.</code></b></p>
+<p><strong>Returns</strong>: Instance of <code>ImageBlob</code> with the given data<br />
+<strong>Throws</strong>:</p>
+<ul>
+<li><code>TypeError</code> thrown if the arrayBuffer is not of type ArrayBuffer</li>
+<li><code>Error</code> thrown if the height or width is not provided or if either is &lt; 0</li>
+<li><code>Error</code> thrown if the colorSpace mentioned is not supported</li>
+<li><code>Error</code> thrown if the componentSize mentioned is not supported</li>
+<li><code>Error</code> thrown if the ByteLength of not matching the required size as per the given options</li>
+<li><code>Error</code> thrown if the PixelFormat mentioned is not supported</li>
+</ul>
 <p>| Param | Type | Description |
 | --- | --- | --- |
-| entrypoints | <code>Object</code> | it consists of mainly three objects - 'plugin', 'panels' and 'commands'. |
-| entrypoints.plugin | <code>Object</code> | This can be an object or a function. If this is a function, it is                                           assumed as the 'create' handler (described below). |
-| entrypoints.plugin.create | <code>function</code> | This is called after plugin is loaded. 'this' can be used to access                                         UxpPluginInfo object. If 'plugin' object is defined, 'create' must be defined.                                         To signal failure, throw an exception. |
-| entrypoints.plugin.destroy | <code>function</code> | This is called before plugin is unloaded. 'this' can be used to access                                          UxpPluginInfo object. |
-| entrypoints.panels | <code>Array&lt;object&gt;</code> | This contains a list of key-value pairs where each key is a panel id (string) and                               value is the data for the panel whose type can be object/function.                               If a function, it is assumed to be the 'show' method (described below).                               If an object, it can contain following properties but it is must to                               define either of 'create' or 'show'. |
-| entrypoints.panels.create | <code>function</code> | This is called when a panel is created. 'this' can be used to access                                         UxpPanelInfo object. This function can return a promise.                                         To signal failure, throw an exception or return a rejected promise.                                         This has a default Timeout of 300 MSec from manifest v5 onwards.                              Parameters :                                          create(event) {}, till Manifest Version V4                                          create(rootNode) {}, from v5 onwards |
-| entrypoints.panels.show | <code>function</code> | This is called when a panel is shown. 'this' can be used to access                                         UxpPanelInfo object. This function can return a promise.                                         To signal failure, throw an exception or return a rejected promise.                                         This has a default Timeout of 300 MSec from manifest v5 onwards.                              Parameters :                                          show(event) {}, till Manifest Version V4                                          show(rootNode, data) {}, from v5 onwards |
-| entrypoints.panels.hide | <code>function</code> | This is called when a panel is hidden. 'this' can be used to access                                       UxpPanelInfo object. This function can return a promise.                                       To signal failure, throw an exception or return a rejected promise.                                       This has a default Timeout of 300 MSec from manifest v5 onwards.                              Parameters :                                          hide(event) {}, till Manifest Version V4                                          hide(rootNode, data) {}, from v5 onwards |
-| entrypoints.panels.destroy | <code>function</code> | This is called when a panel is going to be destroyed. 'this' can be                                          used to access UxpPanelInfo object. To signal failure, throw an exception.                              Parameters :                                          destroy(event) {}, till Manifest Version V4                                          destroy(rootNode) {}, from v5 onwards |
-| entrypoints.panels.invokeMenu | <code>function</code> | This is called when a panel menu item is invoked.                                             Menu id is passed as the first argument to this function. 'this' can be                                             used to access UxpPanelInfo object. This function can return a promise.                                             To signal failure, throw an exception or return a rejected promise. |
-| entrypoints.panels.customEntrypoint | <code>function</code> | Apart from the above default uxp panel entrypoints, Host Apps can define                                                   additional entrypoints to support custon lifecycle events. Details of the entrypoint like                                                   name, parameters passed, return type, etc. are defined by the host app.                                                   Currently, Photoshop hasn't defined any custom entrypoints.                                                   Xd has defined one custom entrypoint <code>update</code>.                                                        update entrypoint in XD is called whenever panel UI content should be updated.                                                        Parameters : update(scenegraph.selection, scenegraph.update)                                                        https://developer.adobe.com/xd/uxp/develop/reference/ui/panels/update/ |
-| entrypoints.panels.menuItems | <code>Array</code> | array of menu items. Each menu item can be a string or an object with                                         properties defined below. Menu items are displayed in the                                         same order as specified in this array. For specifying a separator,                                         a value of "-" or menu item with label "-" can be used at required place in the array. |
-| entrypoints.panels.menuItems.id | <code>string</code> | identifier of the menu item. |
-| entrypoints.panels.menuItems.label | <code>string</code> | display text for the menu item. Should be localized. If label is not                                              specified, id is used as label. |
-| entrypoints.panels.menuItems.enabled | <code>boolean</code> | enabled/disabled state for the menu item. Default - true. |
-| entrypoints.panels.menuItems.checked | <code>boolean</code> | checked state for the menu item. Default - false. |
-| entrypoints.panels.menuItems.submenu | <code>Array</code> | submenu for this menu item again as an array of 'menuItems'.                                               'id' of submenus should still be unique across panel. |
-| entrypoints.commands | <code>Array&lt;object&gt;</code> | This object contains a list of key-value pairs where each key is the command id and                                 value is command's data whose type can be an object or function.                                 If a function, it is assumed to be 'run' method (described below).                                 If an objet, it can contain following properties but 'run' is must to specify. |
-| entrypoints.commands.run | <code>function</code> | This is called when the command is invoked via menu entry. 'this' can be used                                      to access UxpCommandInfo object. This function can return a promise.                                      To signal failure, throw an exception or return a rejected promise.                              Parameters :                                          run(event) {}, till Manifest Version V4                                          run(executionContext, ...arguments) {}, from v5 onwards |
-| entrypoints.commands.cancel | <code>function</code> | For future use. |</p>
+| arrayBuffer | <code>ArrayBuffer</code> | ArrayBuffer containing the image data |
+| options | <code>Object</code> | Meta data to interpret ArrayBuffer passed. For standard compression options.type is mandatory, for uncompressed image data all the values are mandatory unless mentioned optional |
+| options.type | <code>string</code> | mimeType of the imageData passed. Could be standard formats "image/png", "image/jpg" and for uncompressed data "image/uncompressed" |
+| options.width | <code>number</code> | The width in pixels of the image data |
+| options.height | <code>number</code> | The height in pixels of the image data |
+| options.colorSpace | <code>string</code> | The color space (or mode) for the image data. This can be "RGB" or "Grayscale" |
+| options.hasAlpha | <code>boolean</code> | True if the image includes an alpha channel |
+| options.components | <code>number</code> | Number of components per pixel. This is 3 for RGB, 4 for RGBA and so forth |
+| options.componentSize | <code>number</code> | Number of bits per component. This can be 8 or 16 |
+| options.pixelFormat | <code>string</code> | Memory layout (order) of components in a pixel. Could be "RGB", "RGBA", or "Gray" |
+| options.colorProfile | <code>string</code> | <code>[Optional]</code> - The color profile (or mode) for the image data. This could be be "Adobe RGB (1998)" |</p>
 <p><strong>Example</strong><br />
-<code>js
-const { entrypoints } = require("uxp");
- entrypoints.setup({
-     plugin: {
-         create() {..},
-         destroy() {..}
-     },
-     panels: {
-         "panel1": {
-             create() {..},
-             show() {..},
-             hide() {..},
-             destroy() {..},
-             invokeMenu() {..},
-             update() {..}, // customEntrypoint example
-             validatNode() {..} // customEntrypoint example
-              menuItems: [
-                  {
-                      id: "signIn",
-                      label: "Sign In...",
-                      enabled: false,
-                      checked: false
-                      submenu: [
-                          { id: "submenu1", label: "submenu1", enabled: false, checked: false},
-                          { "submenu2" }
-                      ]
-                  },
-                  "-",  // separator.
-                  "Sign out",  // by default enabled, and the id will be same with the label.
-              ]
-          },
-          "panel2": {..}
-      },
-      commands: {
-          "command1": {
-              run() {..},
-              cancel() {..}
-          },
-          "command2": function(){..}
-      }
-  });</code></p>
-<p><a name="entrypoints-getpanel" id="entrypoints-getpanel"></a></p>
-<h2>getPanel(id)</h2>
-<p>Get panel with specified id</p>
-<p><strong>Returns</strong>: <code>UxpPanelInfo</code> - - panel object for a valid id
-                          null for an invalid id  </p>
+```js
+// Updating HTML with ImageBlob</p>
+<!DOCTYPE html>
+<html>
+
+<head>
+<script src="index.js"></script>
+</head>
+<style>
+body {
+  background-color: whitesmoke;
+  padding: 0 16px;
+}
+
+#image,
+
+container {
+   margin: 8px;
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-start
+}
+</style>
+
+ <body>
+<div class="container">
+   <sp-button id="pixel-btn" variant="secondary" quiet>Paint image</sp-button>
+   <img id="image"></img>
+</div>
+
+</body>
+</html>
+
+<p>//Creating ImageBlob by creating the options Object seperatly and then pass the Object as argument
+function getPixel() {
+ const imageMetaData = {
+    width : 8,
+    height : 8,
+    colorSpace : "RGB",
+    colorProfile : "",
+    pixelFormat : "RGB",
+    components : 3,
+    componentSize : 8,
+    hasAlpha : false, // Alpha is set to false
+    type : "image/uncompressed",
+ }</p>
+<p>let buffer = new ArrayBuffer(imageMetaData.width * imageMetaData.height * 3);
+ let colorArrayView = new Uint8Array(buffer);
+ for(let i = 0; i &lt; colorArrayView.length / 4; i++) {
+    // here we are creating a red image, update values to see the variations
+    colorArrayView[i * 3] = 255; // Red Component
+    colorArrayView[i * 3 + 1] = 0; // Green Component
+    colorArrayView[i * 3 + 2] = 0; // Blue Component
+ }
+ let imageBlob = new ImageBlob(colorArrayView, imageMetaData);
+ // Generate url which can be used as src on HTMLImageElement
+ const url = URL.createObjectURL(imageBlob);
+ // ensure that there is a HTMLImageElement in the Document with id <code>image</code>.
+ const imageElement = document.getElementById("image");
+ imageElement.src = url;</p>
+<p>// revoke(destroy image from the memory) when url is no more required.
+ URL.revokeObjectURL(url);
+}
+document.addEventListener("DOMContentLoaded", () =&gt; {
+document.getElementById("pixel-btn").addEventListener("click", getPixel);
+});
+<code>**Example**</code>js
+// Creating ImageBlob using PhotoshopImageData object(more details about PhotoshopImageData in description).
+const photoshopImageObject; // get image object using Photoshp's imaging apis.
+let colorArrayView = await photoshopImageObject.getData();</p>
+<p>let imageBlob = new ImageBlob(colorArrayView, photoshopImageObject);
+// Generate url which can be used as src on HTMLImageElement
+const url = URL.createObjectURL(imageBlob);
+// ensure that there is a HTMLImageElement in the Document with id <code>image</code>.
+const imageElement = document.getElementById("image");
+imageElement.src = url;</p>
+<p>// revoke(destroy image from the memory) when url is no more required.
+URL.revokeObjectURL(url);
+```</p>
+<p><a name="blob-size" id="blob-size"></a></p>
+<h2>size : <code>number</code></h2>
+<p><strong>Read only</strong>
+Size of the Blob in bytes</p>
+<p><a name="blob-type" id="blob-type"></a></p>
+<h2>type : <code>string</code></h2>
+<p><strong>Read only</strong>
+MIME type of the Blob</p>
+<p><a name="blob-arraybuffer" id="blob-arraybuffer"></a></p>
+<h2>arrayBuffer()</h2>
+<p>Get the contents of the Blob in the form of an ArrayBuffer</p>
+<p><strong>Returns</strong>: <code>Promise&lt;ArrayBuffer&gt;</code>  </p>
+<p><a name="blob-slice" id="blob-slice"></a></p>
+<h2>slice(start, end, contentType)</h2>
+<p>Get a portion of the Blob's data selected from start to end (end not included).</p>
+<p><strong>Returns</strong>: <code>Blob</code>  </p>
 <p>| Param | Type | Description |
 | --- | --- | --- |
-| id | <code>String</code> | panel id |</p>
-<p><a name="entrypoints-getcommand" id="entrypoints-getcommand"></a></p>
-<h2>getCommand(id)</h2>
-<p>Get command with specified id</p>
-<p><strong>Returns</strong>: <code>UxpCommandInfo</code> - - command object for a valid id
-                            null for an invalid id  </p>
-<p>| Param | Type | Description |
-| --- | --- | --- |
-| id | <code>String</code> | command id |</p>
+| start | <code>number</code> | <code>(Optional)</code>- Index into the Blob indicating the first byte to include in the new Blob |
+| end | <code>number</code> | <code>(Optional)</code>- Index into the Blob indicating the first byte that will NOT be included in the new Blob |
+| contentType | <code>string</code> | <code>(Optional)</code>- A string containing the file's <a href="https://developer.mozilla.org/en-US/docs/Glossary/MIME_type">MIME type</a>, or an empty string if the type could not be determined. Refer <a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob/type#value">Blob.type</a> |</p>
+<p><a name="blob-stream" id="blob-stream"></a></p>
+<h2>stream()</h2>
+<p>Get the data contained within the Blob as a ReadableStream</p>
+<p><strong>Returns</strong>: <code>ReadableStream</code>  </p>
+<p><a name="blob-text" id="blob-text"></a></p>
+<h2>text()</h2>
+<p>Get contents of the Blob as a string in UTF-8 format.</p>
+<p><strong>Returns</strong>: <code>Promise&lt;String&gt;</code>  </p>
 </body>
 </html>

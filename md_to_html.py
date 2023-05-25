@@ -1,7 +1,7 @@
 import markdown
 
 
-with open('EntryPoints.md', 'r', encoding='utf-8') as file:
+with open('ImageBlob.md', 'r', encoding='utf-8') as file:
     markdown_content = file.read()
 
 
