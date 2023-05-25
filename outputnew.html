@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ImageBlob.md</title>
+</head>
+<body>
+  <p><a name="imageblob" id="imageblob"></a></p>
+<h1>window.ImageBlob</h1>
+<p><strong>Since</strong>: UXP v7.0.0  </p>
+<p><a name="new-imageblob-new" id="new-imageblob-new"></a></p>
+<h2>ImageBlob(arrayBuffer, options)</h2>
+<p>Blobs are used to create URLs, which can be used as <code>src</code> in <code>HTMLImageElement</code>. It can be created using image data in the standard compression formats such as PNG, JPG, JPEG ,etc.
+ImageBlob is a custom type that extends the support to use uncompressed image data. <br></br>
+e.g. ImageBlob can be created by passing arrayBuffer containing the RGB values for each pixel and options containing metadata to interpret the data in arraybuffer.</p>
+<p>ImageBlob can be created in the following ways
+- standard image compression formats: pass ArrayBuffer of the <code>standard compression formats</code> and mimeType of the compression in the options.type.
+- uncompressed image: pass ArrayBuffer of the uncompressed image data i.e. raw data of each pixel and options to interpret the data, option.type should be passed as "image/uncompressed".<br></br></p>
+<p><a href="/ps_reference/media/imaging/#photoshopimagedata-1">PhotoshopImageData</a> is compatible with ImageBlob,
+<code>PhotoshopImageData</code> object can be directly passed in for options.</p>
+<p><b>Note: <code>ImageBlob support is subject to enablement by HostApp. Currently supported by Photoshop.</code></b></p>
+<p><strong>Returns</strong>: Instance of <code>ImageBlob</code> with the given data<br />
+<strong>Throws</strong>:</p>
+<ul>
+<li><code>TypeError</code> thrown if the arrayBuffer is not of type ArrayBuffer</li>
+<li><code>Error</code> thrown if the height or width is not provided or if either is &lt; 0</li>
+<li><code>Error</code> thrown if the colorSpace mentioned is not supported</li>
+<li><code>Error</code> thrown if the componentSize mentioned is not supported</li>
+<li><code>Error</code> thrown if the ByteLength of not matching the required size as per the given options</li>
+<li><code>Error</code> thrown if the PixelFormat mentioned is not supported</li>
+</ul>
+<p>| Param | Type | Description |
+| --- | --- | --- |
+| arrayBuffer | <code>ArrayBuffer</code> | ArrayBuffer containing the image data |
+| options | <code>Object</code> | Meta data to interpret ArrayBuffer passed. For standard compression options.type is mandatory, for uncompressed image data all the values are mandatory unless mentioned optional |
+| options.type | <code>string</code> | mimeType of the imageData passed. Could be standard formats "image/png", "image/jpg" and for uncompressed data "image/uncompressed" |
+| options.width | <code>number</code> | The width in pixels of the image data |
+| options.height | <code>number</code> | The height in pixels of the image data |
+| options.colorSpace | <code>string</code> | The color space (or mode) for the image data. This can be "RGB" or "Grayscale" |
+| options.hasAlpha | <code>boolean</code> | True if the image includes an alpha channel |
+| options.components | <code>number</code> | Number of components per pixel. This is 3 for RGB, 4 for RGBA and so forth |
+| options.componentSize | <code>number</code> | Number of bits per component. This can be 8 or 16 |
+| options.pixelFormat | <code>string</code> | Memory layout (order) of components in a pixel. Could be "RGB", "RGBA", or "Gray" |
+| options.colorProfile | <code>string</code> | <code>[Optional]</code> - The color profile (or mode) for the image data. This could be be "Adobe RGB (1998)" |</p>
+<p><strong>Example</strong><br />
+```js
+// Updating HTML with ImageBlob</p>
+<!DOCTYPE html>
+<html>
+
+<head>
+<script src="index.js"></script>
+</head>
+<style>
+body {
+  background-color: whitesmoke;
+  padding: 0 16px;
+}
+
+#image,
+
+container {
+   margin: 8px;
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-start
+}
+</style>
+
+ <body>
+<div class="container">
+   <sp-button id="pixel-btn" variant="secondary" quiet>Paint image</sp-button>
+   <img id="image"></img>
+</div>
+
+</body>
+</html>
+
+<p>//Creating ImageBlob by creating the options Object seperatly and then pass the Object as argument
+function getPixel() {
+ const imageMetaData = {
+    width : 8,
+    height : 8,
+    colorSpace : "RGB",
+    colorProfile : "",
+    pixelFormat : "RGB",
+    components : 3,
+    componentSize : 8,
+    hasAlpha : false, // Alpha is set to false
+    type : "image/uncompressed",
+ }</p>
+<p>let buffer = new ArrayBuffer(imageMetaData.width * imageMetaData.height * 3);
+ let colorArrayView = new Uint8Array(buffer);
+ for(let i = 0; i &lt; colorArrayView.length / 4; i++) {
+    // here we are creating a red image, update values to see the variations
+    colorArrayView[i * 3] = 255; // Red Component
+    colorArrayView[i * 3 + 1] = 0; // Green Component
+    colorArrayView[i * 3 + 2] = 0; // Blue Component
+ }
+ let imageBlob = new ImageBlob(colorArrayView, imageMetaData);
+ // Generate url which can be used as src on HTMLImageElement
+ const url = URL.createObjectURL(imageBlob);
+ // ensure that there is a HTMLImageElement in the Document with id <code>image</code>.
+ const imageElement = document.getElementById("image");
+ imageElement.src = url;</p>
+<p>// revoke(destroy image from the memory) when url is no more required.
+ URL.revokeObjectURL(url);
+}
+document.addEventListener("DOMContentLoaded", () =&gt; {
+document.getElementById("pixel-btn").addEventListener("click", getPixel);
+});
+<code>**Example**</code>js
+// Creating ImageBlob using PhotoshopImageData object(more details about PhotoshopImageData in description).
+const photoshopImageObject; // get image object using Photoshp's imaging apis.
+let colorArrayView = await photoshopImageObject.getData();</p>
+<p>let imageBlob = new ImageBlob(colorArrayView, photoshopImageObject);
+// Generate url which can be used as src on HTMLImageElement
+const url = URL.createObjectURL(imageBlob);
+// ensure that there is a HTMLImageElement in the Document with id <code>image</code>.
+const imageElement = document.getElementById("image");
+imageElement.src = url;</p>
+<p>// revoke(destroy image from the memory) when url is no more required.
+URL.revokeObjectURL(url);
+```</p>
+<p><a name="blob-size" id="blob-size"></a></p>
+<h2>size : <code>number</code></h2>
+<p><strong>Read only</strong>
+Size of the Blob in bytes</p>
+<p><a name="blob-type" id="blob-type"></a></p>
+<h2>type : <code>string</code></h2>
+<p><strong>Read only</strong>
+MIME type of the Blob</p>
+<p><a name="blob-arraybuffer" id="blob-arraybuffer"></a></p>
+<h2>arrayBuffer()</h2>
+<p>Get the contents of the Blob in the form of an ArrayBuffer</p>
+<p><strong>Returns</strong>: <code>Promise&lt;ArrayBuffer&gt;</code>  </p>
+<p><a name="blob-slice" id="blob-slice"></a></p>
+<h2>slice(start, end, contentType)</h2>
+<p>Get a portion of the Blob's data selected from start to end (end not included).</p>
+<p><strong>Returns</strong>: <code>Blob</code>  </p>
+<p>| Param | Type | Description |
+| --- | --- | --- |
+| start | <code>number</code> | <code>(Optional)</code>- Index into the Blob indicating the first byte to include in the new Blob |
+| end | <code>number</code> | <code>(Optional)</code>- Index into the Blob indicating the first byte that will NOT be included in the new Blob |
+| contentType | <code>string</code> | <code>(Optional)</code>- A string containing the file's <a href="https://developer.mozilla.org/en-US/docs/Glossary/MIME_type">MIME type</a>, or an empty string if the type could not be determined. Refer <a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob/type#value">Blob.type</a> |</p>
+<p><a name="blob-stream" id="blob-stream"></a></p>
+<h2>stream()</h2>
+<p>Get the data contained within the Blob as a ReadableStream</p>
+<p><strong>Returns</strong>: <code>ReadableStream</code>  </p>
+<p><a name="blob-text" id="blob-text"></a></p>
+<h2>text()</h2>
+<p>Get contents of the Blob as a string in UTF-8 format.</p>
+<p><strong>Returns</strong>: <code>Promise&lt;String&gt;</code>  </p>
+</body>
+</html>
