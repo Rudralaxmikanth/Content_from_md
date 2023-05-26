@@ -1,0 +1,224 @@
+{
+  "data": [
+    {
+      "title": "window.ImageBlob",
+      "context": "Since: UXP v7.0.0 ",
+      "qa_pairs": [
+        {
+          "question": "What is Since UXP v700?",
+          "answer": "Since UXP v700"
+        },
+        {
+          "question": "What can you tell me about window.ImageBlob?",
+          "answer": "window.ImageBlob"
+        }
+      ]
+    },
+    {
+      "title": "ImageBlob(arrayBuffer, options)",
+      "context": "Blobs are used to create URLs, which can be used as src in HTMLImageElement. It can be created using image data in the standard compression formats such as PNG, JPG, JPEG ,etc.\nImageBlob is a custom type that extends the support to use uncompressed image data. \ne.g. ImageBlob can be created by passing arrayBuffer containing the RGB values for each pixel and options containing metadata to interpret the data in arraybuffer. ImageBlob can be created in the following ways\n- standard image compression formats: pass ArrayBuffer of the standard compression formats and mimeType of the compression in the options.type.\n- uncompressed image: pass ArrayBuffer of the uncompressed image data i.e. raw data of each pixel and options to interpret the data, option.type should be passed as \"image/uncompressed\". PhotoshopImageData is compatible with ImageBlob,\nPhotoshopImageData object can be directly passed in for options. Note: ImageBlob support is subject to enablement by HostApp. Currently supported by Photoshop. Returns: Instance of ImageBlob with the given data\nThrows: | Param | Type | Description |\n| --- | --- | --- |\n| arrayBuffer | ArrayBuffer | ArrayBuffer containing the image data |\n| options | Object | Meta data to interpret ArrayBuffer passed. For standard compression options.type is mandatory, for uncompressed image data all the values are mandatory unless mentioned optional |\n| options.type | string | mimeType of the imageData passed. Could be standard formats \"image/png\", \"image/jpg\" and for uncompressed data \"image/uncompressed\" |\n| options.width | number | The width in pixels of the image data |\n| options.height | number | The height in pixels of the image data |\n| options.colorSpace | string | The color space (or mode) for the image data. This can be \"RGB\" or \"Grayscale\" |\n| options.hasAlpha | boolean | True if the image includes an alpha channel |\n| options.components | number | Number of components per pixel. This is 3 for RGB, 4 for RGBA and so forth |\n| options.componentSize | number | Number of bits per component. This can be 8 or 16 |\n| options.pixelFormat | string | Memory layout (order) of components in a pixel. Could be \"RGB\", \"RGBA\", or \"Gray\" |\n| options.colorProfile | string | [Optional] - The color profile (or mode) for the image data. This could be be \"Adobe RGB (1998)\" | Example\n```js\n// Updating HTML with ImageBlob //Creating ImageBlob by creating the options Object seperatly and then pass the Object as argument\nfunction getPixel() {\n const imageMetaData = {\n    width : 8,\n    height : 8,\n    colorSpace : \"RGB\",\n    colorProfile : \"\",\n    pixelFormat : \"RGB\",\n    components : 3,\n    componentSize : 8,\n    hasAlpha : false, // Alpha is set to false\n    type : \"image/uncompressed\",\n } let buffer = new ArrayBuffer(imageMetaData.width * imageMetaData.height * 3);\n let colorArrayView = new Uint8Array(buffer);\n for(let i = 0; i < colorArrayView.length / 4; i++) {\n    // here we are creating a red image, update values to see the variations\n    colorArrayView[i * 3] = 255; // Red Component\n    colorArrayView[i * 3 + 1] = 0; // Green Component\n    colorArrayView[i * 3 + 2] = 0; // Blue Component\n }\n let imageBlob = new ImageBlob(colorArrayView, imageMetaData);\n // Generate url which can be used as src on HTMLImageElement\n const url = URL.createObjectURL(imageBlob);\n // ensure that there is a HTMLImageElement in the Document with id image.\n const imageElement = document.getElementById(\"image\");\n imageElement.src = url; // revoke(destroy image from the memory) when url is no more required.\n URL.revokeObjectURL(url);\n}\ndocument.addEventListener(\"DOMContentLoaded\", () => {\ndocument.getElementById(\"pixel-btn\").addEventListener(\"click\", getPixel);\n});\n**Example**js\n// Creating ImageBlob using PhotoshopImageData object(more details about PhotoshopImageData in description).\nconst photoshopImageObject; // get image object using Photoshp's imaging apis.\nlet colorArrayView = await photoshopImageObject.getData(); let imageBlob = new ImageBlob(colorArrayView, photoshopImageObject);\n// Generate url which can be used as src on HTMLImageElement\nconst url = URL.createObjectURL(imageBlob);\n// ensure that there is a HTMLImageElement in the Document with id image.\nconst imageElement = document.getElementById(\"image\");\nimageElement.src = url; // revoke(destroy image from the memory) when url is no more required.\nURL.revokeObjectURL(url);\n``` ",
+      "qa_pairs": [
+        {
+          "question": "What is Blobs are used to create URLs which can be used as src in HTMLImageElement?",
+          "answer": "Blobs are used to create URLs which can be used as src in HTMLImageElement"
+        },
+        {
+          "question": "What is It can be created using image data in the standard compression formats such as PNG JPG JPEG etc?",
+          "answer": "It can be created using image data in the standard compression formats such as PNG JPG JPEG etc"
+        },
+        {
+          "question": "What is ImageBlob is a custom type that extends the support to use uncompressed image data?",
+          "answer": "ImageBlob is a custom type that extends the support to use uncompressed image data"
+        },
+        {
+          "question": "What is eg?",
+          "answer": "eg"
+        },
+        {
+          "question": "What is ImageBlob can be created by passing arrayBuffer containing the RGB values for each pixel and options containing metadata to interpret the data in arraybuffer?",
+          "answer": "ImageBlob can be created by passing arrayBuffer containing the RGB values for each pixel and options containing metadata to interpret the data in arraybuffer"
+        },
+        {
+          "question": "What is ImageBlob can be created in the following ways\n standard image compression formats pass ArrayBuffer of the standard compression formats and mimeType of the compression in the optionstype?",
+          "answer": "ImageBlob can be created in the following ways\n standard image compression formats pass ArrayBuffer of the standard compression formats and mimeType of the compression in the optionstype"
+        },
+        {
+          "question": "What is uncompressed image pass ArrayBuffer of the uncompressed image data ie?",
+          "answer": "uncompressed image pass ArrayBuffer of the uncompressed image data ie"
+        },
+        {
+          "question": "What is raw data of each pixel and options to interpret the data optiontype should be passed as imageuncompressed?",
+          "answer": "raw data of each pixel and options to interpret the data optiontype should be passed as imageuncompressed"
+        },
+        {
+          "question": "What is PhotoshopImageData is compatible with ImageBlob\nPhotoshopImageData object can be directly passed in for options?",
+          "answer": "PhotoshopImageData is compatible with ImageBlob\nPhotoshopImageData object can be directly passed in for options"
+        },
+        {
+          "question": "What is Note ImageBlob support is subject to enablement by HostApp?",
+          "answer": "Note ImageBlob support is subject to enablement by HostApp"
+        },
+        {
+          "question": "What is Currently supported by Photoshop?",
+          "answer": "Currently supported by Photoshop"
+        },
+        {
+          "question": "What is Returns Instance of ImageBlob with the given data\nThrows  Param  Type  Description \n      \n arrayBuffer  ArrayBuffer  ArrayBuffer containing the image data \n options  Object  Meta data to interpret ArrayBuffer passed?",
+          "answer": "Returns Instance of ImageBlob with the given data\nThrows  Param  Type  Description \n      \n arrayBuffer  ArrayBuffer  ArrayBuffer containing the image data \n options  Object  Meta data to interpret ArrayBuffer passed"
+        },
+        {
+          "question": "What is For standard compression optionstype is mandatory for uncompressed image data all the values are mandatory unless mentioned optional \n optionstype  string  mimeType of the imageData passed?",
+          "answer": "For standard compression optionstype is mandatory for uncompressed image data all the values are mandatory unless mentioned optional \n optionstype  string  mimeType of the imageData passed"
+        },
+        {
+          "question": "What is Could be standard formats imagepng imagejpg and for uncompressed data imageuncompressed \n optionswidth  number  The width in pixels of the image data \n optionsheight  number  The height in pixels of the image data \n optionscolorSpace  string  The color space or mode for the image data?",
+          "answer": "Could be standard formats imagepng imagejpg and for uncompressed data imageuncompressed \n optionswidth  number  The width in pixels of the image data \n optionsheight  number  The height in pixels of the image data \n optionscolorSpace  string  The color space or mode for the image data"
+        },
+        {
+          "question": "What is This can be RGB or Grayscale \n optionshasAlpha  boolean  True if the image includes an alpha channel \n optionscomponents  number  Number of components per pixel?",
+          "answer": "This can be RGB or Grayscale \n optionshasAlpha  boolean  True if the image includes an alpha channel \n optionscomponents  number  Number of components per pixel"
+        },
+        {
+          "question": "What is This is 3 for RGB 4 for RGBA and so forth \n optionscomponentSize  number  Number of bits per component?",
+          "answer": "This is 3 for RGB 4 for RGBA and so forth \n optionscomponentSize  number  Number of bits per component"
+        },
+        {
+          "question": "What is This can be 8 or 16 \n optionspixelFormat  string  Memory layout order of components in a pixel?",
+          "answer": "This can be 8 or 16 \n optionspixelFormat  string  Memory layout order of components in a pixel"
+        },
+        {
+          "question": "What is Could be RGB RGBA or Gray \n optionscolorProfile  string  Optional  The color profile or mode for the image data?",
+          "answer": "Could be RGB RGBA or Gray \n optionscolorProfile  string  Optional  The color profile or mode for the image data"
+        },
+        {
+          "question": "What is This could be be Adobe RGB 1998  Example\njs\n Updating HTML with ImageBlob Creating ImageBlob by creating the options Object seperatly and then pass the Object as argument\nfunction getPixel \n const imageMetaData  \n    width  8\n    height  8\n    colorSpace  RGB\n    colorProfile  \n    pixelFormat  RGB\n    components  3\n    componentSize  8\n    hasAlpha  false  Alpha is set to false\n    type  imageuncompressed\n  let buffer  new ArrayBufferimageMetaDatawidth  imageMetaDataheight  3\n let colorArrayView  new Uint8Arraybuffer\n forlet i  0 i  colorArrayViewlength  4 i \n     here we are creating a red image update values to see the variations\n    colorArrayViewi  3  255  Red Component\n    colorArrayViewi  3  1  0  Green Component\n    colorArrayViewi  3  2  0  Blue Component\n \n let imageBlob  new ImageBlobcolorArrayView imageMetaData\n  Generate url which can be used as src on HTMLImageElement\n const url  URLcreateObjectURLimageBlob\n  ensure that there is a HTMLImageElement in the Document with id image?",
+          "answer": "This could be be Adobe RGB 1998  Example\njs\n Updating HTML with ImageBlob Creating ImageBlob by creating the options Object seperatly and then pass the Object as argument\nfunction getPixel \n const imageMetaData  \n    width  8\n    height  8\n    colorSpace  RGB\n    colorProfile  \n    pixelFormat  RGB\n    components  3\n    componentSize  8\n    hasAlpha  false  Alpha is set to false\n    type  imageuncompressed\n  let buffer  new ArrayBufferimageMetaDatawidth  imageMetaDataheight  3\n let colorArrayView  new Uint8Arraybuffer\n forlet i  0 i  colorArrayViewlength  4 i \n     here we are creating a red image update values to see the variations\n    colorArrayViewi  3  255  Red Component\n    colorArrayViewi  3  1  0  Green Component\n    colorArrayViewi  3  2  0  Blue Component\n \n let imageBlob  new ImageBlobcolorArrayView imageMetaData\n  Generate url which can be used as src on HTMLImageElement\n const url  URLcreateObjectURLimageBlob\n  ensure that there is a HTMLImageElement in the Document with id image"
+        },
+        {
+          "question": "What is const imageElement  documentgetElementByIdimage\n imageElementsrc  url  revokedestroy image from the memory when url is no more required?",
+          "answer": "const imageElement  documentgetElementByIdimage\n imageElementsrc  url  revokedestroy image from the memory when url is no more required"
+        },
+        {
+          "question": "What is URLrevokeObjectURLurl\n\ndocumentaddEventListenerDOMContentLoaded   \ndocumentgetElementByIdpixelbtnaddEventListenerclick getPixel\n\nExamplejs\n Creating ImageBlob using PhotoshopImageData objectmore details about PhotoshopImageData in description?",
+          "answer": "URLrevokeObjectURLurl\n\ndocumentaddEventListenerDOMContentLoaded   \ndocumentgetElementByIdpixelbtnaddEventListenerclick getPixel\n\nExamplejs\n Creating ImageBlob using PhotoshopImageData objectmore details about PhotoshopImageData in description"
+        },
+        {
+          "question": "What is const photoshopImageObject  get image object using Photoshps imaging apis?",
+          "answer": "const photoshopImageObject  get image object using Photoshps imaging apis"
+        },
+        {
+          "question": "What is let colorArrayView  await photoshopImageObjectgetData let imageBlob  new ImageBlobcolorArrayView photoshopImageObject\n Generate url which can be used as src on HTMLImageElement\nconst url  URLcreateObjectURLimageBlob\n ensure that there is a HTMLImageElement in the Document with id image?",
+          "answer": "let colorArrayView  await photoshopImageObjectgetData let imageBlob  new ImageBlobcolorArrayView photoshopImageObject\n Generate url which can be used as src on HTMLImageElement\nconst url  URLcreateObjectURLimageBlob\n ensure that there is a HTMLImageElement in the Document with id image"
+        },
+        {
+          "question": "What is const imageElement  documentgetElementByIdimage\nimageElementsrc  url  revokedestroy image from the memory when url is no more required?",
+          "answer": "const imageElement  documentgetElementByIdimage\nimageElementsrc  url  revokedestroy image from the memory when url is no more required"
+        },
+        {
+          "question": "What is URLrevokeObjectURLurl?",
+          "answer": "URLrevokeObjectURLurl"
+        },
+        {
+          "question": "What can you tell me about ImageBlob(arrayBuffer, options)?",
+          "answer": "ImageBlob(arrayBuffer, options)"
+        }
+      ]
+    },
+    {
+      "title": "size : number",
+      "context": "Read only\nSize of the Blob in bytes ",
+      "qa_pairs": [
+        {
+          "question": "What is Read only\nSize of the Blob in bytes?",
+          "answer": "Read only\nSize of the Blob in bytes"
+        },
+        {
+          "question": "What can you tell me about size : number?",
+          "answer": "size : number"
+        }
+      ]
+    },
+    {
+      "title": "type : string",
+      "context": "Read only\nMIME type of the Blob ",
+      "qa_pairs": [
+        {
+          "question": "What is Read only\nMIME type of the Blob?",
+          "answer": "Read only\nMIME type of the Blob"
+        },
+        {
+          "question": "What can you tell me about type : string?",
+          "answer": "type : string"
+        }
+      ]
+    },
+    {
+      "title": "arrayBuffer()",
+      "context": "Get the contents of the Blob in the form of an ArrayBuffer Returns: Promise<ArrayBuffer> ",
+      "qa_pairs": [
+        {
+          "question": "What is Get the contents of the Blob in the form of an ArrayBuffer Returns PromiseArrayBuffer?",
+          "answer": "Get the contents of the Blob in the form of an ArrayBuffer Returns PromiseArrayBuffer"
+        },
+        {
+          "question": "What can you tell me about arrayBuffer()?",
+          "answer": "arrayBuffer()"
+        }
+      ]
+    },
+    {
+      "title": "slice(start, end, contentType)",
+      "context": "Get a portion of the Blob's data selected from start to end (end not included). Returns: Blob | Param | Type | Description |\n| --- | --- | --- |\n| start | number | (Optional)- Index into the Blob indicating the first byte to include in the new Blob |\n| end | number | (Optional)- Index into the Blob indicating the first byte that will NOT be included in the new Blob |\n| contentType | string | (Optional)- A string containing the file's MIME type, or an empty string if the type could not be determined. Refer Blob.type | ",
+      "qa_pairs": [
+        {
+          "question": "What is Get a portion of the Blobs data selected from start to end end not included?",
+          "answer": "Get a portion of the Blobs data selected from start to end end not included"
+        },
+        {
+          "question": "What is Returns Blob  Param  Type  Description \n      \n start  number  Optional Index into the Blob indicating the first byte to include in the new Blob \n end  number  Optional Index into the Blob indicating the first byte that will NOT be included in the new Blob \n contentType  string  Optional A string containing the files MIME type or an empty string if the type could not be determined?",
+          "answer": "Returns Blob  Param  Type  Description \n      \n start  number  Optional Index into the Blob indicating the first byte to include in the new Blob \n end  number  Optional Index into the Blob indicating the first byte that will NOT be included in the new Blob \n contentType  string  Optional A string containing the files MIME type or an empty string if the type could not be determined"
+        },
+        {
+          "question": "What is Refer Blobtype?",
+          "answer": "Refer Blobtype"
+        },
+        {
+          "question": "What can you tell me about slice(start, end, contentType)?",
+          "answer": "slice(start, end, contentType)"
+        }
+      ]
+    },
+    {
+      "title": "stream()",
+      "context": "Get the data contained within the Blob as a ReadableStream Returns: ReadableStream ",
+      "qa_pairs": [
+        {
+          "question": "What is Get the data contained within the Blob as a ReadableStream Returns ReadableStream?",
+          "answer": "Get the data contained within the Blob as a ReadableStream Returns ReadableStream"
+        },
+        {
+          "question": "What can you tell me about stream()?",
+          "answer": "stream()"
+        }
+      ]
+    },
+    {
+      "title": "text()",
+      "context": "Get contents of the Blob as a string in UTF-8 format. Returns: Promise<String>",
+      "qa_pairs": [
+        {
+          "question": "What is Get contents of the Blob as a string in UTF8 format?",
+          "answer": "Get contents of the Blob as a string in UTF8 format"
+        },
+        {
+          "question": "What is Returns PromiseString?",
+          "answer": "Returns PromiseString"
+        },
+        {
+          "question": "What can you tell me about text()?",
+          "answer": "text()"
+        }
+      ]
+    }
+  ]
+}
